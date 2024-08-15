@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
 
 app = FastAPI()
 
@@ -23,7 +24,8 @@ class TextInput(BaseModel):
 @app.post("/analyze")
 async def analyze_sentiment(input: TextInput):
     # Placeholder for sentiment analysis logic
-    result = {"sentiment": "Positive", "confidence": 85}  # Mock data
+    df = pd.read_csv('datasets/imdb_Dataset.csv')
+    result = df.head()
     return result
 
 if __name__ == "__main__":
