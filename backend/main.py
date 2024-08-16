@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-import re
-import joblib
+from transformers import pipeline
 
 app = FastAPI()
 
@@ -15,30 +14,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load the saved model and vectorizer
-model = joblib.load('sentiment_model.pkl')
-tfidf = joblib.load('tfidf_vectorizer.pkl')
+# Load the sentiment analysis pipeline using a BERT model
+model = pipeline("sentiment-analysis", model="distilbert-base-uncased-finetuned-sst-2-english", framework="pt")
+
 
 class TextInput(BaseModel):
     text: str
 
-def clean_text(text):
-    text = re.sub(r'<.*?>', '', text) # Remove HTML tags
-    text = re.sub(r'\s+', ' ', text)  # Remove extra whitespaces
-    text = re.sub(r'\W', ' ', text)   # Remove non-word characters
-    text = text.lower()
-    return text
-
 @app.post("/analyze")
 async def analyze_sentiment(input: TextInput):
-    cleaned_text = clean_text(input.text)
-    vectorized_text = tfidf.transform([cleaned_text])
-    prediction = model.predict(vectorized_text)[0]
-    confidence = model.predict_proba(vectorized_text).max() * 100
-    
+    prediction = model(input.text)[0]  # Get the first (and only) result
     result = {
-        "sentiment": prediction,
-        "confidence": round(confidence, 2)
+        "sentiment": prediction['label'],
+        "confidence": round(prediction['score'] * 100, 2)
     }
     return result
 
