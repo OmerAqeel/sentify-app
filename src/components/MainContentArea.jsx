@@ -64,8 +64,7 @@ export const MainContentArea = () => {
         <h2 className='Results-title'>Results</h2>
         {result && (
           <div>
-            <p>Sentiment: {result.sentiment}</p>
-            <p>Confidence: {result.confidence}%</p>
+            <pre>{JSON.stringify(result, null, 2)}</pre>
           </div>
         )}
       </div>
