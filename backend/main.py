@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from transformers import pipeline
+import pandas as pd
 
 app = FastAPI()
 
@@ -29,6 +30,17 @@ async def analyze_sentiment(input: TextInput):
         "confidence": round(prediction['score'] * 100, 2)
     }
     return result
+
+@app.post("/analyze_csv")
+async def analyze_sentiment(file: UploadFile = File(...)):
+    df = pd.read_csv(file.file)
+
+    head = df.head()
+
+    return head
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
