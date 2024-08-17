@@ -9,6 +9,7 @@ export const MainContentArea = () => {
     try {
       const response = await axios.post('http://localhost:8000/analyze', { text: inputText });
       setResult(response.data);
+      console.log('response:', response.data);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -24,6 +25,15 @@ export const MainContentArea = () => {
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
+        <br />
+        <div className='or-line'>
+        <hr className='line-1'/>
+        OR
+        <hr className='line-2'/>
+        </div>
+        <div className='file-upload'>
+          <input type='file' />
+        </div>
         <br />
         <button className='analyse-btn' onClick={handleAnalyze}>Analyse</button>
       </div>

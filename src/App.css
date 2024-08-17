@@ -42,3 +42,31 @@ textArea{
   font-size: 20px;
   align-self: center;
 }
+
+.or-line{
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  opacity: 0.4;
+}
+
+.line-1{
+  width: 46%;
+  height: 1px;
+  background-color: #333;
+  margin-right: 4%;
+}
+
+.line-2{
+  width: 46%;
+  height: 1px;
+  background-color: #333;
+  margin-left: 4%;
+}
+
+.file-upload{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+}
