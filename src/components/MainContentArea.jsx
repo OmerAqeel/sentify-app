@@ -4,14 +4,37 @@ import axios from 'axios';
 export const MainContentArea = () => {
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState(null);
+  const [file, setFile] = useState(null);
 
   const handleAnalyze = async () => {
-    try {
-      const response = await axios.post('http://localhost:8000/analyze', { text: inputText });
-      setResult(response.data);
-    } catch (error) {
-      console.error('Error:', error);
+
+    if(file){
+      const formData = new FormData();
+      formData.append('file', file);
+      try {
+        const response = await axios.post('http://localhost:8000/analyze_csv', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        setResult(response.data);
+        console.log('response:', response.data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    }else if (inputText) {
+      try {
+        const response = await axios.post('http://localhost:8000/analyze', { text: inputText });
+        setResult(response.data);
+        console.log('response:', response.data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
     }
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
   };
 
   return (
@@ -24,6 +47,15 @@ export const MainContentArea = () => {
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
+        <br />
+        <div className='or-line'>
+        <hr className='line-1'/>
+        OR
+        <hr className='line-2'/>
+        </div>
+        <div className='file-upload'>
+          <input type='file'  onChange={handleFileChange}/>
+        </div>
         <br />
         <button className='analyse-btn' onClick={handleAnalyze}>Analyse</button>
       </div>
