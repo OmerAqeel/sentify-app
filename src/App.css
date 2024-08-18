@@ -70,3 +70,7 @@ textArea{
   align-items: center;
   padding: 10px 20px;
 }
+
+.results-text{
+  font-family: 'times new roman';
+}
