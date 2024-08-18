@@ -74,3 +74,10 @@ textArea{
 .results-text{
   font-family: 'times new roman';
 }
+
+.bar-chart{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+}
