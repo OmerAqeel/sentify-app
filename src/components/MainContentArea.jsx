@@ -111,7 +111,7 @@ export const MainContentArea = () => {
       <div className='output-area'>
         <h2 className='Results-title'>Results</h2>
         {result && (
-          <div>
+          <div className='chart-container'>
             {renderChart()}
           </div>
         )}

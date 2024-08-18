@@ -24,4 +24,6 @@ yarn-error.log*
 
 backend/datasets/Sentiment140.csv
 
+backend/gpt2-local
+
 
