@@ -7,8 +7,7 @@ export const MainContentArea = () => {
   const [file, setFile] = useState(null);
 
   const handleAnalyze = async () => {
-
-    if(file){
+    if (file) {
       const formData = new FormData();
       formData.append('file', file);
       try {
@@ -22,7 +21,7 @@ export const MainContentArea = () => {
       } catch (error) {
         console.error('Error:', error);
       }
-    }else if (inputText) {
+    } else if (inputText) {
       try {
         const response = await axios.post('http://localhost:8000/analyze', { text: inputText });
         setResult(response.data);
@@ -42,19 +41,18 @@ export const MainContentArea = () => {
       <div className='input-area'>
         <p className='info-text'>Please type/paste the text that you would like to analyse</p>
         <br />
-        <textarea 
-          id="" 
+        <textarea
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
         />
         <br />
         <div className='or-line'>
-        <hr className='line-1'/>
-        OR
-        <hr className='line-2'/>
+          <hr className='line-1'/>
+          OR
+          <hr className='line-2'/>
         </div>
         <div className='file-upload'>
-          <input type='file'  onChange={handleFileChange}/>
+          <input type='file' onChange={handleFileChange} />
         </div>
         <br />
         <button className='analyse-btn' onClick={handleAnalyze}>Analyse</button>
@@ -64,7 +62,10 @@ export const MainContentArea = () => {
         <h2 className='Results-title'>Results</h2>
         {result && (
           <div>
-            <pre>{JSON.stringify(result, null, 2)}</pre>
+            <h3>Product Summary:</h3>
+            <pre className="results-text">{JSON.stringify(result.product_summary, null, 2)}</pre>
+            <h3>Sentiment Trend Plot:</h3>
+            <img src={`data:image/png;base64,${result.plot_image}`} alt="Sentiment Trend Plot" />
           </div>
         )}
       </div>
