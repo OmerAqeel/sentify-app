@@ -75,9 +75,11 @@ textArea{
   font-family: 'times new roman';
 }
 
-.bar-chart{
+
+
+.chart-container{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 60%;
+  margin: 20px 0;
 }
