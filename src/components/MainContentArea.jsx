@@ -1,5 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+// Register the required components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export const MainContentArea = () => {
   const [inputText, setInputText] = useState('');
@@ -36,6 +49,43 @@ export const MainContentArea = () => {
     setFile(e.target.files[0]);
   };
 
+  const renderChart = () => {
+    if (!result || !result.product_summary || !result.product_summary.POSITIVE || !result.product_summary.NEGATIVE) {
+      return null;
+    }
+  
+    const products = Object.keys(result.product_summary.POSITIVE || {}); // Safely get the product keys
+    const data = {
+      labels: products,
+      datasets: [
+        {
+          label: 'Positive Feedbacks',
+          data: products.map(product => result.product_summary.POSITIVE[product] || 0),
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        },
+        {
+          label: 'Negative Feedbacks',
+          data: products.map(product => result.product_summary.NEGATIVE[product] || 0),
+          backgroundColor: 'rgba(255, 99, 132, 0.6)',
+        }
+      ]
+    };
+  
+    const options = {
+      scales: {
+        y: {
+          beginAtZero: true,
+          min: 0,
+          max: Math.max(
+            ...data.datasets[0].data.concat(data.datasets[1].data)
+          ) + 1,
+        },
+      },
+    };
+  
+    return <Bar data={data} options={options} height={100} width={400}/>;
+  };
+  
   return (
     <div className='main-container'>
       <div className='input-area'>
@@ -62,10 +112,7 @@ export const MainContentArea = () => {
         <h2 className='Results-title'>Results</h2>
         {result && (
           <div>
-            <h3>Product Summary:</h3>
-            <pre className="results-text">{JSON.stringify(result.product_summary, null, 2)}</pre>
-            <h3>Sentiment Trend Plot:</h3>
-            <img src={`data:image/png;base64,${result.plot_image}`} alt="Sentiment Trend Plot" />
+            {renderChart()}
           </div>
         )}
       </div>
