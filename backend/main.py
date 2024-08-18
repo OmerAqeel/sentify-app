@@ -43,44 +43,36 @@ async def analyze_csv(file: UploadFile = File(...)):
     sentiments = [model(feedback)[0] for feedback in df['Feedback']]
     
     # Pass the DataFrame and sentiments to the analysis function
-    result = analyze_sentiment_trends(df, sentiments)
+    result = analyze_sentiment_counts(df, sentiments)
     
     return result
 
 
-def analyze_sentiment_trends(df: pd.DataFrame, sentiments: list) -> dict:
+def analyze_sentiment_counts(df: pd.DataFrame, sentiments: list) -> dict:
     """
-    Analyze sentiment trends over time for each product in the given DataFrame.
+    Analyze sentiment counts for each product in the given DataFrame.
     
     Parameters:
     - df: DataFrame containing 'Product', 'Feedback', and 'Date' columns.
     - sentiments: List of sentiment analysis results corresponding to each feedback.
     
     Returns:
-    - A dictionary containing the sentiment summary and a base64-encoded plot image.
+    - A dictionary containing the sentiment summary and a base64-encoded bar chart image.
     """
-    # Convert the Date column to datetime
-    df['Date'] = pd.to_datetime(df['Date'], format='%d/%m/%Y')
-
     # Add the sentiments to the DataFrame
     df['Sentiment'] = [s['label'] for s in sentiments]
-    df['Sentiment_Score'] = df['Sentiment'].map({'POSITIVE': 1, 'NEGATIVE': -1, 'NEUTRAL': 0})
-    
-    # Group by product and date to calculate the average sentiment score
-    sentiment_over_time = df.groupby(['Product', pd.Grouper(key='Date', freq='D')]).agg({
-        'Sentiment_Score': 'mean'
-    }).reset_index()
 
-    # Visualization: Sentiment Trend Over Time by Product
-    plt.figure(figsize=(10, 6))
-    for product in sentiment_over_time['Product'].unique():
-        product_data = sentiment_over_time[sentiment_over_time['Product'] == product]
-        plt.plot(product_data['Date'], product_data['Sentiment_Score'], label=product)
+    # Count the number of positive, negative, and neutral sentiments for each product
+    sentiment_counts = df.groupby(['Product', 'Sentiment']).size().unstack(fill_value=0)
 
-    plt.xlabel('Date')
-    plt.ylabel('Average Sentiment Score')
-    plt.title('Sentiment Trend Over Time by Product')
-    plt.legend()
+    # Visualization: Sentiment Counts by Product
+    sentiment_counts.plot(kind='bar', stacked=False, figsize=(10, 6))
+
+    plt.xlabel('Product')
+    plt.ylabel('Count of Feedbacks')
+    plt.title('Sentiment Counts by Product')
+    plt.xticks(rotation=45)
+    plt.legend(title="Sentiment")
     
     # Save the plot to a bytes buffer
     buf = io.BytesIO()
@@ -91,7 +83,7 @@ def analyze_sentiment_trends(df: pd.DataFrame, sentiments: list) -> dict:
 
     # Return the sentiment summary and the plot as a base64 string
     return {
-        "product_summary": sentiment_over_time.to_dict(orient='records'),
+        "product_summary": sentiment_counts.to_dict(),
         "plot_image": image_base64
     }
 
